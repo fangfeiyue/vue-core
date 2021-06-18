@@ -12,16 +12,14 @@
     const vm = new Vue({
       data() {
         return {
-          name: 'f',
-          obj: {
-            name: 1,
-            age: 2
-          }
-        }
+          // arr: [1, 2, 3, 4]
+          obj: {name:'d'},
+          arr: [{name:'f'}, {name:'g'}]
+        } 
       }
     })
+
     console.log(vm)
-    vm.obj = {name: 'd'}
   </script>
 </body>
 </html>
