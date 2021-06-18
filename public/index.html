@@ -7,14 +7,24 @@
   <title>Document</title>
 </head>
 <body>
+  <!-- 
+    模板编译原理 通过AST语法树描述出html语法结构 ，在把这个语法转换成JS语法，包上with 生成render方法 ，调用这个方法返回虚拟dom， 再把虚拟dom变成真实dom渲染到页面上。
+
+    注意：虚拟dom和ast语法树不一样，虚拟dom是表示dom对象的，ast语法树这里表示html结构 
+
+    1. 将模板变成一个render函数，
+    2. 去当前的的实例上取值
+    3. 虚拟dom（说白了就是一个对象）它的好处是可以描述DOM结构，diff算法，可以比对哪些属性变化了哪些属性没有变化，把需要变化的进行更新
+    4. 生成真实dom
+   -->
+  <div id="app">{{name}}</div>
   <script src="/dist/vue.js"></script>
   <script>
     const vm = new Vue({
+      el: '#app',
       data() {
         return {
-          // arr: [1, 2, 3, 4]
-          obj: {name:'d'},
-          arr: [{name:'f'}, {name:'g'}]
+          name: 'f'
         } 
       }
     })
