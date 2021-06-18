@@ -17,7 +17,11 @@
     3. 虚拟dom（说白了就是一个对象）它的好处是可以描述DOM结构，diff算法，可以比对哪些属性变化了哪些属性没有变化，把需要变化的进行更新
     4. 生成真实dom
    -->
-  <div id="app">{{name}}</div>
+  <div id="app">
+    <div style="color:red;">
+      <span>{{name}}</span>
+    </div>
+  </div>
   <script src="/dist/vue.js"></script>
   <script>
     const vm = new Vue({

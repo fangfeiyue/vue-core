@@ -1,3 +1,4 @@
+import { compileToFunctions } from './compiler/index';
 import { initState } from './state';
 
 export function initMixin(Vue) {
