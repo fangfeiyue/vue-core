@@ -1,4 +1,5 @@
 import { compileToFunctions } from './compiler/index';
+import { mountComponent } from './lifeCycle';
 import { initState } from './state';
 
 export function initMixin(Vue) {
@@ -19,7 +20,7 @@ export function initMixin(Vue) {
 		const options = vm.$options;
 		el = document.querySelector(el);
 
-    // 如果有render就直接用render，没有render，看看有没有template属性，如果也没有template属性的话，就直接找外部模板
+		// 如果有render就直接用render，没有render，看看有没有template属性，如果也没有template属性的话，就直接找外部模板
 		// 如果没有render方法
 		if (!options.render) {
 			let template = options.template;
@@ -27,10 +28,12 @@ export function initMixin(Vue) {
 			if (!template && el) {
 				template = el.outerHTML;
 			}
-      // 将模板编译成render函数
+			// 将模板编译成render函数
 			const render = compileToFunctions(template);
 			options.render = render;
-      console.log('render',render)
+			console.log('render', render);
 		}
+
+		mountComponent(vm, el); // 组件挂载
 	};
 }
