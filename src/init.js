@@ -30,6 +30,7 @@ export function initMixin(Vue) {
       // 将模板编译成render函数
 			const render = compileToFunctions(template);
 			options.render = render;
+      console.log('render',render)
 		}
 	};
 }
