@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
   <!-- 
     模板编译原理 通过AST语法树描述出html语法结构 ，在把这个语法转换成JS语法，包上with 生成render方法 ，调用这个方法返回虚拟dom， 再把虚拟dom变成真实dom渲染到页面上。
@@ -18,7 +20,7 @@
     4. 生成真实dom
    -->
   <div id="app" a=1 b=2 style="color:red;font-size:12px;">
-      <span style="color:red;">{{name}} aa {{age}} haha<a>hello</a></span>
+    <span style="color:red;">{{name}} aa {{age}} haha<a>hello</a></span>
   </div>
   <script src="/dist/vue.js"></script>
   <script>
@@ -27,12 +29,27 @@
       data() {
         return {
           name: 'f',
-          age: 18
-        } 
+          age: 18,
+          address: ''
+        }
       }
     })
+
+    console.clear()
+
+    // 修改了数据后，手动调用_update方法更新dom
+    vm.name = 'dd'
+    vm._update(vm._render()) // 强制更新的方法，但是我们希望数据变化后可以自动更新视图，而不是手动触发
+
+    // 在这里取值，没有依赖模板，所以不需要收集依赖
+    vm.address
+
+    setTimeout(() => {
+      vm.name = 'ff'
+    }, 1000)
 
     // console.log(vm)
   </script>
 </body>
+
 </html>

@@ -1,4 +1,5 @@
 import { arrayMethods } from './array';
+import Dep from './dep';
 
 class Observer {
 	// value 观测的数据
@@ -57,11 +58,18 @@ export function defineReactive(data, key, value) {
 	// Object.defineProperty只是重写了对象的get和set，Proxy是给对象设置代理不用改写对象性能高些，两者不一样
 	observe(value);
 
+	let dep = new Dep(); // 每次都会给属性创建deep，也就是每个属性都有一个deep属性，可以去记录当前的watcher
 	Object.defineProperty(data, key, {
 		get() {
+			// 给每个属性增加一个deep，Dep.target指的是当前的watcher
+			if (Dep.target) {
+				dep.depend(); // 让当前属性的dep记住当前的watcher，也要让当前的watcher记住这个dep，注意只是让模板中使用到属性记住watcher，模板中没有使用到的属性不用记录watcher，防止无用更新
+			}
 			return value;
 		},
 		set(newValue) {
+			// 取值时会打印输出当前dep
+			console.log(dep);
 			// 如果新值和旧值相等，则不做任何操作
 			if (newValue === value) return;
 			/* 
@@ -70,6 +78,9 @@ export function defineReactive(data, key, value) {
       */
 			observe(newValue);
 			value = newValue;
+
+			// 通知dep中记录的watcher让它去执行，更新页面
+			dep.notify();
 		}
 	});
 }

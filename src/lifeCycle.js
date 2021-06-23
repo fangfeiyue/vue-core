@@ -6,8 +6,12 @@ export function lifecycleMixin(Vue) {
 		console.log('_udpate', vnode);
 		// 将虚拟节点转换成真实dom
 		const vm = this;
-    // 首次渲染需要用虚拟节点更新真实dom
-		vm.$el = patch(vm.$options.el, vnode);
+		console.log('vm.$options.el', vm.$options.el);
+		// 首次渲染需要用虚拟节点更新真实dom
+		// vm.$el = patch(vm.$options.el, vnode);
+
+		// 第一次渲染的完毕后，拿到新的节点，下次再次渲染时替换上次渲染的结果
+		vm.$options.el = patch(vm.$options.el, vnode);
 	};
 }
 export function mountComponent(vm, el) {
