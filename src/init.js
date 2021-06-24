@@ -1,6 +1,7 @@
 import { compileToFunctions } from './compiler/index';
 import { mountComponent } from './lifeCycle';
 import { initState } from './state';
+import { nextTick } from './util/next-tick';
 
 export function initMixin(Vue) {
 	Vue.prototype._init = function(options) {
@@ -15,6 +16,7 @@ export function initMixin(Vue) {
 			vm.$mount(vm.$options.el);
 		}
 	};
+  Vue.prototype.$nextTick = nextTick
 	Vue.prototype.$mount = function(el) {
 		const vm = this;
 		const options = vm.$options;

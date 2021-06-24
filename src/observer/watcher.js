@@ -1,4 +1,5 @@
 import { popTarget, pushTarget } from './dep';
+import { queueWatcher } from './scheduler';
 
 // id用于标识不同组件不同的watcher
 let id = 0;
@@ -44,10 +45,14 @@ class Watcher {
 			dep.addSub(this);
 		}
 	}
+	// 如果多次同时更新一个数据，希望合并成一次去更新这个数据
 	update() {
-		this.get();
+		// this.get();
+		queueWatcher(this);
 	}
+  run() {
+    this.get()
+  }
 }
-
 // 在取值之前把watcher暴露到全局上，让所有属性(这个属性必须在模板中使用到)的deep都记住这个watcher，等数据变了，就可以让属性记住的watcher去执行
 export default Watcher;

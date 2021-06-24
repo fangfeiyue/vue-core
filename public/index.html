@@ -35,7 +35,7 @@
       }
     })
 
-    console.clear()
+    // console.clear()
 
     // 修改了数据后，手动调用_update方法更新dom
     vm.name = 'dd'
@@ -45,10 +45,32 @@
     vm.address
 
     setTimeout(() => {
-      vm.name = 'ff'
-    }, 1000)
+      console.clear()
+      // 1.测试批量更新
+      vm.name = '1'
+      vm.name = '2'
+      vm.name = '3'
+      // 2.修改完成后立刻获取真实dom，结果和我们想象的不一样  因为我们更新的操作是异步的
+      // console.log(vm.$options.el.innerHTML)
+      // 使用setTimeout来获取更新后的结果
+      // setTimeout(() => {
+      //   console.log(vm.$options.el.innerHTML)
+      // })
+      // 使用nextTick获取更新后的结果
+      vm.$nextTick(() => {
+        console.log(vm.$options.el.innerHTML)
+      })
+      vm.name = '4'
+      vm.name = '5'
+    }, 5000)
 
     // console.log(vm)
+    /* 
+    1. 默认渲染时会将渲染watcher放到Dep.target上
+    2. 当我们调用this.getter时就会对属性进行取值操作
+    3. 让Dep.target值为空，不在模板中访问的值不记录watcher
+    4. 修改name值，会找到name对应的dep，通知dep中的watcher执行
+    */
   </script>
 </body>
 
