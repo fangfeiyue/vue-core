@@ -9,50 +9,36 @@
 </head>
 
 <body>
-  <!-- 
-    模板编译原理 通过AST语法树描述出html语法结构 ，在把这个语法转换成JS语法，包上with 生成render方法 ，调用这个方法返回虚拟dom， 再把虚拟dom变成真实dom渲染到页面上。
-
-    注意：虚拟dom和ast语法树不一样，虚拟dom是表示dom对象的，ast语法树这里表示html结构 
-
-    1. 将模板变成一个render函数，
-    2. 去当前的的实例上取值
-    3. 虚拟dom（说白了就是一个对象）它的好处是可以描述DOM结构，diff算法，可以比对哪些属性变化了哪些属性没有变化，把需要变化的进行更新
-    4. 生成真实dom
-   -->
   <div id="app">
+    <my-button></my-button>
   </div>
-  <!-- {{arr2[0].name}}{{arr2}} -->
   <script src="/dist/vue.js"></script>
   <script>
-    // mergeOptions API实现的原理
-    Vue.mixin({ // mixin 是一个静态方法
-      beforeCreate() { // 组件创建之前
-        console.log('beforeCreate1')
-      },
-      created() { // 数据已经被劫持
-        console.log('created1')
-      }
+    // Vue.component 原理 内部使用 Vue.extend API， 这个 API 会返回一个通过对象创建的类，我们可以通过这个类创建一个组件去使用 
+    // 如果没有手动调用Vue.extend方法，会自动调用
+    Vue.component('my-button', {
+      template: '<button>按钮1</button>'
     })
-    Vue.mixin({ // mixin 是一个静态方法
-      beforeCreate() { // 组件创建之前
-        console.log('beforeCreate2')
-      },
-      created() { // 数据已经被劫持
-        console.log('created2')
-      }
-    })
+    /*
+    等价于下面 
+    Vue.component('my-button', Vue.extend({
+      template: '<button>按钮1</button>'
+    }))
+    */
+
+    // const Sub = Vue.extend({
+    //   template: '<button>按钮2</button>'
+    // })
+
+    // Sub.component('aa', {})
+
+    // 先查找自己身上是否有这个组件，如果没有查找父亲的
     const vm = new Vue({
       el: '#app',
-      beforeCreate() { // 组件创建之前
-        console.log('beforeCreate3')
-      },
-      created() { // 数据已经被劫持
-        console.log('created3')
+      components: {
+        template: `<button>按钮2</button>`
       }
     })
-    /* 
-    Vue.mixin 会合并成一个数组
-    */
   </script>
 </body>
 
