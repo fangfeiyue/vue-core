@@ -19,30 +19,40 @@
     3. 虚拟dom（说白了就是一个对象）它的好处是可以描述DOM结构，diff算法，可以比对哪些属性变化了哪些属性没有变化，把需要变化的进行更新
     4. 生成真实dom
    -->
-  <div id="app" a=1 b=2 style="color:red;font-size:12px;">
-    {{arr1}}
+  <div id="app">
   </div>
   <!-- {{arr2[0].name}}{{arr2}} -->
   <script src="/dist/vue.js"></script>
   <script>
-    const vm = new Vue({
-      el: '#app',
-      data() {
-        return {
-          // 情况一 内部会给arr1这个属性增加依赖，但是我们更改数组时不会去通知更新
-          // arr1: [1, 2, 3],
-          // 情况二 外层数组进行了依赖收集，但是里层数组还没有进行依赖收集
-          arr1:[[1, 2, 3]]
-          // arr2: [{name: 'f'}]
-        }
+    // mergeOptions API实现的原理
+    Vue.mixin({ // mixin 是一个静态方法
+      beforeCreate() { // 组件创建之前
+        console.log('beforeCreate1')
+      },
+      created() { // 数据已经被劫持
+        console.log('created1')
       }
     })
-    setTimeout(() => {
-      // vm.arr1.push(4)
-      vm.arr1[0].push(4)
-      // _s(xx)里使用了JSON.stringify，所以改变页面会变化
-      // vm.arr2[0].name = 'dd'
-    }, 1000);
+    Vue.mixin({ // mixin 是一个静态方法
+      beforeCreate() { // 组件创建之前
+        console.log('beforeCreate2')
+      },
+      created() { // 数据已经被劫持
+        console.log('created2')
+      }
+    })
+    const vm = new Vue({
+      el: '#app',
+      beforeCreate() { // 组件创建之前
+        console.log('beforeCreate3')
+      },
+      created() { // 数据已经被劫持
+        console.log('created3')
+      }
+    })
+    /* 
+    Vue.mixin 会合并成一个数组
+    */
   </script>
 </body>
 

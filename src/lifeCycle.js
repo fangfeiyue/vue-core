@@ -11,7 +11,7 @@ export function lifecycleMixin(Vue) {
 		// vm.$el = patch(vm.$options.el, vnode);
 
 		// 第一次渲染的完毕后，拿到新的节点，下次再次渲染时替换上次渲染的结果
-		vm.$options.el = patch(vm.$options.el, vnode);
+		vm.$el = patch(vm.$el, vnode);
 	};
 }
 export function mountComponent(vm, el) {
@@ -31,4 +31,14 @@ export function mountComponent(vm, el) {
 		},
 		true
 	); // true 表示这是一个渲染watcher
+}
+
+// 参数的意思就是调用实例上的哪个hook
+export function callHook(vm, hook) { // 发布模式
+	const handlers = vm.$options[hook];
+	if (handlers) {
+		for (let i = 0; i < handlers.length; i++) {
+			handlers[i].call(vm);
+		}
+	}
 }
