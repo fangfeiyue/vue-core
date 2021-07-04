@@ -72,7 +72,7 @@ export function defineReactive(data, key, value) {
 	// 相当于给数组本身添加了一个dep属性，让数组通过childOb.dep.depend()收集了watcher，等到数组中的内容发生变化去通知watcher更新
 	let childOb = observe(value);
 	// 在这个例子中，这个dep是给数组加的，仅限于这个例子
-	console.log('childOb.dep', childOb.dep); // Dep {id: 1, subs: Array(0)}
+	// console.log('childOb.dep', childOb.dep); // Dep {id: 1, subs: Array(0)}
 
 	let dep = new Dep(); // 每次都会给属性创建deep，也就是每个属性都有一个deep属性，可以去记录当前的watcher
 	Object.defineProperty(data, key, {
