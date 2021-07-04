@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <my-button></my-button>
+  </div>
+  <script src="/dist/vue.js"></script>
+  <script>
+    Vue.component('my-button', {
+      template: '<button>按钮1</button>'
+    })
+    const vm = new Vue({
+      el: '#app',
+      components: {
+        'my-button': {
+          template: `<button>按钮2</button>`
+        }
+      }
+    })
+    /* 
+    1. 调用 Vue.component的时候会调用Vue.extend方法，把对象变成一个构造函数（生成子类的构造函数）
+    2. 如果是组件添加了 init hook() 还添加了componentOptions
+    3. 创建真实节点的时候，会调用 init 钩子，这个 init 方法会做一个初始化操作，new Ctor，当我们去 new 的时候会产生一个组件实例，然后调用$mount方法进行挂载操作，内部会再给组件添加一个 watcher，所以每个组件都有一个自己的 watcher，会将渲染的节点放到当前实例上并返回
+    */
+  </script>
+</body>
+
+</html>
