@@ -15,14 +15,14 @@ const strats = {};
 function mergeHook(parentVal, childValue) {
 	if (childValue) {
 		if (parentVal) {
-      
-			return parentVal.concat(childValue);
+
+      return parentVal.concat(childValue);
 		} else {
-      // 儿子有父亲没有
+			// 儿子有父亲没有
 			return [ childValue ];
 		}
 	} else {
-    // 如果儿子没有就用父亲的
+		// 如果儿子没有就用父亲的
 		return parentVal;
 	}
 }
@@ -73,7 +73,7 @@ export function mergeOptions(parent, child) {
 
 		// 策略模式
 		if (strats[key]) {
-			return options[key] = strats[key](parent[key], child[key]);
+			return (options[key] = strats[key](parent[key], child[key]));
 		}
 
 		if (isObject(parent[key]) && isObject(child[key])) {
@@ -89,3 +89,14 @@ export function mergeOptions(parent, child) {
 	}
 	return options;
 }
+
+function makeMap(str) {
+	const map = {};
+	const list = str.split(',');
+	for (let i = 0; i < list.length; i++) {
+		map[list[i]] = true;
+	}
+	return (key) => map[key];
+}
+
+export const isReservedTag = makeMap('a,div,img,image,text,span,input,p,button');

@@ -41,52 +41,51 @@ ast 语法树
 }
 */
 
-let root;
-let currentParent;
-let stack = [];
-const ELEMENT_TYPE = 1;
-const TEXT_TYPE = 3;
-
-function createASTElement(tagName, attrs) {
-	return {
-		tag: tagName,
-		type: ELEMENT_TYPE,
-		children: [],
-		attrs,
-		parent: null
-	};
-}
-
-function start(tagName, attrs) {
-  console.log(tagName, attrs);
-  let element = createASTElement(tagName, attrs);
-  if (!root) {
-    root = element;
-  }
-  currentParent = element;
-  stack.push(element); // 例如：[div, div, span, /span]
-}
-function end(tagName) {
-  console.log(tagName);
-  let element = stack.pop(); // 当遇到span结尾的时候就把span删掉 [div, div]，让这个span记住它的parent是谁
-  currentParent = stack[stack.length - 1];
-  if (currentParent) {
-    element.parent = currentParent;
-    currentParent.children.push(element);
-  }
-}
-function chars(text) {
-  console.log(text);
-  text = text.replace(/\s/g, '');
-  if (text) {
-    currentParent.children.push({
-      type: TEXT_TYPE,
-      text
-    });
-  }
-}
-
 export function parseHTML(html) {
+	let root;
+	let currentParent;
+	let stack = [];
+	const ELEMENT_TYPE = 1;
+	const TEXT_TYPE = 3;
+
+	function createASTElement(tagName, attrs) {
+		return {
+			tag: tagName,
+			type: ELEMENT_TYPE,
+			children: [],
+			attrs,
+			parent: null
+		};
+	}
+
+	function start(tagName, attrs) {
+		console.log(tagName, attrs);
+		let element = createASTElement(tagName, attrs);
+		if (!root) {
+			root = element;
+		}
+		currentParent = element;
+		stack.push(element); // 例如：[div, div, span, /span]
+	}
+	function end(tagName) {
+		console.log(tagName);
+		let element = stack.pop(); // 当遇到span结尾的时候就把span删掉 [div, div]，让这个span记住它的parent是谁
+		currentParent = stack[stack.length - 1];
+		if (currentParent) {
+			element.parent = currentParent;
+			currentParent.children.push(element);
+		}
+	}
+	function chars(text) {
+		console.log(text);
+		text = text.replace(/\s/g, '');
+		if (text) {
+			currentParent.children.push({
+				type: TEXT_TYPE,
+				text
+			});
+		}
+	}
 	while (html) {
 		let textEnd = html.indexOf('<');
 		if (textEnd == 0) {
@@ -133,7 +132,7 @@ export function parseHTML(html) {
 			chars(text);
 		}
 	}
-	
+
 	function advance(n) {
 		html = html.substring(n);
 	}
@@ -163,5 +162,5 @@ export function parseHTML(html) {
 		}
 	}
 
-  return root
+	return root;
 }

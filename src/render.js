@@ -3,11 +3,11 @@ import { createElement, createTextNode } from "./vdom/index";
 export function renderMixin(Vue) {
 	Vue.prototype._v = function(text) {
 		// 创建文本
-		return createTextNode(text);
+		return createTextNode(this, text);
 	};
 	Vue.prototype._c = function() {
 		// 创建元素
-		return createElement(...arguments);
+		return createElement(this, ...arguments);
 	};
 	Vue.prototype._s = function(val) {
     // 转化成字符串

@@ -16,7 +16,7 @@ export function lifecycleMixin(Vue) {
 }
 export function mountComponent(vm, el) {
 	// 默认 vue 通过 watcher 来渲染，这个watcher可以叫做渲染watcher，每个组件都有一个渲染watcher
-	vm.$el = el;
+	// vm.$el = el;
 	let updateComponent = () => {
 		// 将虚拟节点 渲染到页面上
 		// vm._render() 返回虚拟节点

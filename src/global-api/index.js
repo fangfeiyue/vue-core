@@ -25,6 +25,7 @@ export function initGlobalAPI(Vue) {
 		definition = this.options._base.extend(definition) // 通过对象产生一个构造函数
 		this.options.components[id] = definition;
 	};
+  let cid = 0;
 	Vue.extend = function(options) {
 		// 子组件初始化时会new VueComponent(options)
     // Super 永远指向大Vue
@@ -32,6 +33,16 @@ export function initGlobalAPI(Vue) {
 		const Sub = function VueComponent(options) {
 			this._init(options);
 		};
+    
+    /* 
+    防止不同的构造函数产生的组件名字是相同的情况，比如我们在页面调用了三次：
+    <my-button></my-button>
+    <my-button></my-button>
+    <my-button></my-button>
+    会生成三个同名的组件
+    */
+    Sub.cid = cid++;
+
 		Sub.prototype = Object.create(Super.prototype); // 都是通过大 Vue 继承的
 		Sub.prototype.constructor = Sub;
 		Sub.component = Super.component;
