@@ -99,4 +99,4 @@ function makeMap(str) {
 	return (key) => map[key];
 }
 
-export const isReservedTag = makeMap('a,div,img,image,text,span,input,p,button');
+export const isReservedTag = makeMap('a,ul,li,div,img,image,span,input,p,button');
