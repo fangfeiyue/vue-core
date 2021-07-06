@@ -82,6 +82,27 @@ function updateChildren(parent, oldChildren, newChildren) {
 	let newEndIndex = newChildren.length - 1; // 老的尾索引
 	let newEndVnode = newChildren[newEndIndex]; // 老的结束节点
 
+  function makeIndexByKey(oldChildren) {
+    const map = {};
+    oldChildren.forEach((item, index) => {
+      map[item.key] = index;
+    })
+    return map;
+  }
+  const map = makeIndexByKey(oldChildren);
+  /* 
+  old 结构:
+  <ul>
+    <li key="A">A</li>
+    <li key="B">B</li>
+    <li key="C">C</li>
+    <li key="D">D</li>
+    <li key="F">F</li>
+  </ul>
+  输出： map -> {A: 0, B: 1, C: 2, D: 3, F: 4}
+  */
+  console.log('mapmap',map);
+
 	while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
 		// 前端中比较常见的操作有向尾部插入、向头部插入、头移动到尾、尾移动到头、正序和反序
 		// 优化向后追加逻辑
@@ -104,7 +125,15 @@ function updateChildren(parent, oldChildren, newChildren) {
       <li key="E">E</li>
     </ul>
     */
-		if (isSameVnode(oldStartVnode, newStartVnode)) {
+    
+    /* 
+    处理 oldStartVnode 无效的情况，如：乱序diff中，如果oldVnode移动到 B 的时候，再移动到 C ，发现 C 已经被设置为 undefined
+    */
+		if (!oldStartVnode) {
+      oldStartVnode = oldChildren[++oldStartIndex];
+    }else if (!oldEndVnode) { // 处理 oldEndVnode 无效的情况
+      oldEndVnode = oldChildren[--oldEndIndex];
+    }else if (isSameVnode(oldStartVnode, newStartVnode)) {
 			// 头和头比
 			/* 
       向后插入：
@@ -183,6 +212,27 @@ function updateChildren(parent, oldChildren, newChildren) {
       old 结构：a b c d f
       new 结构：n a c b e
       */
+
+      /* 
+      需要先查找当前老节点索引和key的关系，移动的时候通过新的key去找对应的老节点的索引，通过这个索引可以获取老节点，可以移动老节点
+      */
+      // map -> {A: 0, B: 1, C: 2, D: 3, F: 4}
+      // 查看 newVnode 的节点在 oldVnode 中是否存在，如例子中的 N 节点
+      const moveIndex = map[newStartVnode.key];
+      // 如果节点不存在，则将这个新节点插入到当前老节点的前面，如列子中将 newVnode 的 N 节点插入到 oldVnode 的 A 节点的前面
+      if (moveIndex === undefined) {
+        parent.insertBefore(createElm(newStartVnode), oldStartVnode.el);
+      }else {
+        // 如果存在，则获取对应节点，如例子中的 C 节点
+        const moveVnode = oldChildren[moveIndex];
+        // 将这个节点原来的位置置为空或者undeifned，防止数组塌陷
+        oldChildren[moveIndex] = undefined;
+        // 如果找到了，需要两个虚拟节点对比，比如对比两个节点的属性等
+        patch(moveVnode, newStartVnode);
+        // 将这个新节点插入到 oldVnode 当前节点的前面
+        parent.insertBefore(moveVnode.el, oldStartVnode.el);
+      }
+      newStartVnode = newChildren[++newStartIndex];
     }
 	}
 
@@ -208,6 +258,23 @@ function updateChildren(parent, oldChildren, newChildren) {
 			// parent.appendChild(createElm(newChildren[i]));
 		}
 	}
+
+  /* 
+  如果对比完成后，发现老的比新的多，就把老的剩余的元素移除，
+  如diff乱序中的例子：
+  old 结构：a b c d f
+  new 结构：n a c b e
+  对比完成后，发现老的新的多了 d f，就将这两个删除
+  */
+  if (oldStartIndex <= oldEndIndex) {
+    for (let i = oldStartIndex; i <= oldEndIndex; i++) {
+      const child = oldChildren[i];
+      // 排除没有值的节点，比如上面乱序的例子中我们把 old 中的 c 置为空
+      if (child) {
+        parent.removeChild(child.el); // 用父亲移除儿子即可
+      }
+    }
+  }
 }
 function createComponent(vnode) {
 	let i = vnode.data;

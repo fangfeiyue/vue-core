@@ -30,13 +30,23 @@ const vm1 = new Vue({
 	}
 });
 // 将模板编译成 render 函数
-const render1 = compileToFunctions(`
-<ul>
+const render1 = compileToFunctions(
+// `<ul>
+//   <li key="A">A</li>
+//   <li key="B">B</li>
+//   <li key="C">C</li>
+//   <li key="D">D</li>
+// </ul>`
+
+// 乱序
+`<ul>
   <li key="A">A</li>
   <li key="B">B</li>
   <li key="C">C</li>
   <li key="D">D</li>
-</ul>`);
+  <li key="F">F</li>
+</ul>`
+);
 // 生成虚拟节点
 const oldVnode = render1.call(vm1);
 // 创建真实节点
@@ -78,11 +88,20 @@ const render2 = compileToFunctions(
 //   <li key="A">A</li>
 // </ul>`
 
+// `<ul>
+//   <li key="D">D</li>
+//   <li key="C">C</li>
+//   <li key="B">B</li>
+//   <li key="A">A</li>
+// </ul>`
+
+// 乱序
 `<ul>
-  <li key="D">D</li>
+  <li key="N">N</li>
+  <li key="A">A</li>
   <li key="C">C</li>
   <li key="B">B</li>
-  <li key="A">A</li>
+  <li key="E">E</li>
 </ul>`
 );
 // 生成虚拟节点
@@ -90,6 +109,6 @@ const newVnode = render2.call(vm2);
 setTimeout(() => {
 	patch(oldVnode, newVnode); // 包括了初次渲染和 diff 算法的流程。
 	console.log('执行了');
-}, 1000);
+}, 5000);
 
 export default Vue;
