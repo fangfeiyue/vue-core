@@ -137,7 +137,7 @@ function updateChildren(parent, oldChildren, newChildren) {
       针对这种情况：
       比较 old 头和 new 尾是否一致
       */
-		} else if (isSameVnode(oldStartVnode, newEndVnode)) {
+		} else if (isSameVnode(oldStartVnode, newEndVnode)) { // 头移动到尾
 			// 头和尾比
 			/* 
       简单的例子
@@ -160,7 +160,30 @@ function updateChildren(parent, oldChildren, newChildren) {
       // parent.appendChild(oldStartVnode.el)
       oldStartVnode = oldChildren[++oldStartIndex];
       newEndVnode = newChildren[--newEndIndex];
-		}
+		}else if (isSameVnode(oldEndVnode, newStartVnode)){ // 尾移动到头部
+      /* 
+      old 结构：a b c d
+      new 结构：d a b c
+      这种情况就麻烦了，头和头比不相同，尾和尾比不相同，头和尾比也不相同，但是尾和头比可以，比对完后要将 d 插入到 a 的前面，然后移动指针
+                     |  <-
+      old 结构: d a b c [d]
+                 |
+
+      new 结构: d a b c
+              -> |   |
+      此时头和头相同b和b相同 c和c相同
+      */
+      patch(oldEndVnode, newStartVnode);
+      parent.insertBefore(oldEndVnode.el, oldStartVnode.el);
+      oldEndVnode = oldChildren[--oldEndIndex];
+      newStartVnode = newChildren[++newStartIndex];
+    }else {
+      // 永远把新增的元素或者移动的元素插入当 old 当前指针的前面
+      /* 
+      old 结构：a b c d f
+      new 结构：n a c b e
+      */
+    }
 	}
 
 	if (newStartIndex <= newEndIndex) {
