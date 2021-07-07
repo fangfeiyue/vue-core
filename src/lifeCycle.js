@@ -11,7 +11,14 @@ export function lifecycleMixin(Vue) {
 		// vm.$el = patch(vm.$options.el, vnode);
 
 		// 第一次渲染的完毕后，拿到新的节点，下次再次渲染时替换上次渲染的结果
-		vm.$el = patch(vm.$el, vnode);
+    // 第一次初始化，第二次走diff算法
+		const preVnode = vm._vnode; // 先取上一次的vnode，看下是否有值
+    vm._vnode = vnode; // 保存上一次的虚拟节点
+    if (!preVnode) {
+      vm.$el = patch(vm.$el, vnode); // 组件调用patch方法产生$el属性
+    } else {
+      vm.$el = patch(preVnode, vnode);
+    }
 	};
 }
 export function mountComponent(vm, el) {

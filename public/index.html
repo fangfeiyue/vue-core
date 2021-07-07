@@ -8,6 +8,23 @@
   <title>Document</title>
 </head>
 <body>
+  <div id="app">
+    <span>hello</span>
+    <span>{{name}}</span>
+  </div>
   <script src="/dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          name: 'fang'
+        }
+      }
+    })
+    setTimeout(() => {
+      vm.name = 'fei';
+    }, 3000)
+  </script>
 </body>
 </html>
