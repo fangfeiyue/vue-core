@@ -1,4 +1,6 @@
 import { observe } from './observer/index';
+import Watcher from './observer/watcher';
+import { isObject } from './util/index';
 
 // 作用：将所有数据定义在vm属性上，并且后续更改触发视图更新
 export function initState(vm) {
@@ -8,7 +10,7 @@ export function initState(vm) {
 		initProps(vm);
 	}
 	if (opts.methods) {
-		initMethod(vm);
+		// initMethod(vm);
 	}
 	if (opts.data) {
 		// 初始化data
@@ -18,7 +20,7 @@ export function initState(vm) {
 		initComputed(vm);
 	}
 	if (opts.watch) {
-		initWatch(vm);
+    initWatch(vm, opts.watch);
 	}
 }
 function proxy(vm, source, key) {
@@ -44,4 +46,44 @@ function initData(vm) {
 
 	// 观察数据
 	observe(data);
+}
+
+function initWatch(vm, watch) {
+  for (let key in watch) {
+    // 获取key对应的值
+    const handler = watch[key];
+    // 如果用户传入的是一个数组就循环数组，将值依次进行创建
+    if (Array.isArray(handler)) {
+      handler.forEach(handler => {
+        createWatcher(vm, key ,handler);
+      })
+    }else {
+      // 单纯的key value
+      createWatcher(vm, key, handler)
+    }
+  }
+}
+
+function createWatcher(vm, key, handler, options) {
+	if (isObject(handler)) {
+		options = handler;
+		handler = handler.handler;
+	}
+
+	if (typeof handler === 'string') {
+		handler = vm.$options.methods[handler];
+	}
+	// 参数的格式化操作
+	console.log('handler==>', handler, options);
+  // watch的原理就是$watch
+  return vm.$watch(key, handler, options);
+}
+
+export function stateMixin(Vue) {
+  Vue.prototype.$watch = function(expOrFn, cb, options={}) {
+    // 之前的 watcher 叫渲染 watcher，现在的这个 watcher 叫用户 watcher。
+    const vm = this;
+    options.user = true; // 当前是用户自己写的 watcher
+    new Watcher(vm, expOrFn, cb, options);
+  }
 }

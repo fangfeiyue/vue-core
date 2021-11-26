@@ -1,30 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>watch方法参数的处理</title>
 </head>
 <body>
   <div id="app">
-    <span>hello</span>
-    <span>{{name}}</span>
+    {{age}}
   </div>
-  <script src="/dist/vue.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script> -->
+  <script src="../dist/vue.js"></script>
   <script>
     const vm = new Vue({
       el: '#app',
       data() {
         return {
-          name: 'fang'
+          age: 18
         }
-      }
+      },
+      watch: {
+        // age(newValue, oldValue) {
+        //   alert(1)
+        //   console.log(newValue, oldValue)
+        // },
+        
+        // age: {
+        //   handler(newValue, oldValue) {
+        //     console.log(newValue, oldValue)
+        //   },
+        //   sync: true // 会出现两次
+        // }
+
+        // age: [
+        //   function handler1(newValue, oldValue) {
+        //     console.log(newValue, oldValue)
+        //   },
+        //   function handler2(newValue, oldValue) {
+        //     console.log(newValue, oldValue)
+        //   }
+        // ]
+
+        // age: [
+        //   'handler',
+        //   'handler1'
+        // ]
+
+        // age: 'handler'
+
+        age: [{
+          handler: 'handler',
+          sync: true
+        }]
+      },
+      methods: {
+        handler(newValue, oldValue) {
+          console.log(newValue, oldValue)
+        },
+        handler1(newValue, oldValue) {
+          console.log(newValue, oldValue)
+        }
+      },
     })
     setTimeout(() => {
-      vm.name = 'fei';
-    }, 3000)
+      vm.age = 19
+    }, 4000);
+    // vm.age = 20
+    /* 
+    1.如果监控的key对应的值是对象，是无法获取老状态的
+    2.watch一个属性可以注册多个监听器
+    3.可以写成handler的形式，监听method中的方法
+    */
   </script>
 </body>
 </html>

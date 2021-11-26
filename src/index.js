@@ -2,8 +2,8 @@ import { compileToFunctions } from './compiler/index';
 import { initGlobalAPI } from './global-api/index';
 import { initMixin } from './init';
 import { lifecycleMixin } from './lifeCycle';
-import { createElm, patch } from './observer/patch';
 import { renderMixin } from './render';
+import { stateMixin } from './state';
 
 function Vue(options) {
 	this._init(options); // 当用户 new Vue 时，会调用 init 方法进行 vue 的初始化
@@ -20,5 +20,7 @@ lifecycleMixin(Vue); // 更新逻辑 包含的主要方法_update()
 renderMixin(Vue); // 调用render逻辑 包含的主要方法_render()
 
 initGlobalAPI(Vue); // 混合全局的api
+
+stateMixin(Vue);
 
 export default Vue;
