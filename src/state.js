@@ -1,3 +1,4 @@
+import Dep from './observer/dep';
 import { observe } from './observer/index';
 import Watcher from './observer/watcher';
 import { isObject } from './util/index';
@@ -17,10 +18,10 @@ export function initState(vm) {
 		initData(vm);
 	}
 	if (opts.computed) {
-		initComputed(vm);
+		initComputed(vm, opts.computed);
 	}
 	if (opts.watch) {
-    initWatch(vm, opts.watch);
+		initWatch(vm, opts.watch);
 	}
 }
 function proxy(vm, source, key) {
@@ -48,20 +49,70 @@ function initData(vm) {
 	observe(data);
 }
 
+// 内部原理都是通过wacher实现的
+function initComputed(vm, computed) {
+	// _computedWatchers 存放这所有计算属性对应的 wacher
+	const watchers = (vm._computedWatchers = {});
+
+	for (let key in computed) {
+		const userDef = computed[key]; // 获取用户定义的函数
+		const getter = typeof userDef === 'function' ? userDef : userDef.get;
+		// lazy: true 表示是一个 computed 属性， watcher 内部会根据 lazy 属性判断是否调用getter 方法
+		watchers[key] = new Watcher(vm, getter, () => {}, { lazy: true });
+
+		// 计算属性可以通过 vm 进行取值，所以将属性
+		defineComputed(vm, key, userDef);
+	}
+}
+
+// 属性描述器
+const sharedPropertyDefinition = {
+	enumerable: true,
+	configurable: true,
+	get: () => {}
+};
+
+function defineComputed(vm, key, userDef) {
+	if (typeof userDef === 'function') {
+		sharedPropertyDefinition.get = createComputedGetter(key);
+	} else {
+		sharedPropertyDefinition.get = createComputedGetter(key);
+		sharedPropertyDefinition.set = userDef.set || (() => {});
+	}
+	Object.defineProperty(vm, key, sharedPropertyDefinition);
+}
+
+// 通过 watcher 来实现计算属性的缓存的功能
+function createComputedGetter(key) {
+	return function() {
+		const watcher = this._computedWatchers[key];
+		// 第一次取值 dirty 为 true， 调用用户的方法
+		if (watcher.dirty) watcher.evaluate();
+		if (Dep.target) {
+			// watcher 指代计算属性的 watcher
+			watcher.depend(); // 渲染 watcher 一并收集起来
+		}
+		return watcher.value;
+	};
+}
+
 function initWatch(vm, watch) {
-  for (let key in watch) {
-    // 获取key对应的值
-    const handler = watch[key];
-    // 如果用户传入的是一个数组就循环数组，将值依次进行创建
-    if (Array.isArray(handler)) {
-      handler.forEach(handler => {
-        createWatcher(vm, key ,handler);
-      })
-    }else {
-      // 单纯的key value
-      createWatcher(vm, key, handler)
-    }
-  }
+	for (let key in watch) {
+		// 获取key对应的值
+		const handler = watch[key];
+		// 如果用户传入的是一个数组就循环数组，将值依次进行创建
+		if (Array.isArray(handler)) {
+			// handler.forEach((handler) => {
+			// 	createWatcher(vm, key, handler);
+			// });
+			for (let i = 0, len = handler.length; i < len; i++) {
+				createWatcher(vm, key, handler[i]);
+			}
+		} else {
+			// 单纯的key value
+			createWatcher(vm, key, handler);
+		}
+	}
 }
 
 function createWatcher(vm, key, handler, options) {
@@ -71,19 +122,20 @@ function createWatcher(vm, key, handler, options) {
 	}
 
 	if (typeof handler === 'string') {
+		// 获取 method 中的方法
 		handler = vm.$options.methods[handler];
 	}
 	// 参数的格式化操作
 	console.log('handler==>', handler, options);
-  // watch的原理就是$watch
-  return vm.$watch(key, handler, options);
+	// watch的原理就是$watch
+	return vm.$watch(key, handler, options);
 }
 
 export function stateMixin(Vue) {
-  Vue.prototype.$watch = function(expOrFn, cb, options={}) {
-    // 之前的 watcher 叫渲染 watcher，现在的这个 watcher 叫用户 watcher。
-    const vm = this;
-    options.user = true; // 当前是用户自己写的 watcher
-    new Watcher(vm, expOrFn, cb, options);
-  }
+	Vue.prototype.$watch = function(expOrFn, cb, options = {}) {
+		// 之前的 watcher 叫渲染 watcher，现在的这个 watcher 叫用户 watcher。
+		const vm = this;
+		options.user = true; // 当前是用户自己写的 watcher
+		new Watcher(vm, expOrFn, cb, options);
+	};
 }

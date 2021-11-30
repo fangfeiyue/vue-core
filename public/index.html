@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>watch方法参数的处理</title>
+  <title>计算属性</title>
 </head>
+
 <body>
   <div id="app">
-    {{age}}
+    {{fullName}}
   </div>
   <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script> -->
   <script src="../dist/vue.js"></script>
@@ -17,61 +19,27 @@
       el: '#app',
       data() {
         return {
-          age: 18
+          firstName: 'f',
+          lastName: 'fy',
         }
       },
-      watch: {
-        // age(newValue, oldValue) {
-        //   alert(1)
-        //   console.log(newValue, oldValue)
-        // },
-        
-        // age: {
-        //   handler(newValue, oldValue) {
-        //     console.log(newValue, oldValue)
-        //   },
-        //   sync: true // 会出现两次
-        // }
-
-        // age: [
-        //   function handler1(newValue, oldValue) {
-        //     console.log(newValue, oldValue)
-        //   },
-        //   function handler2(newValue, oldValue) {
-        //     console.log(newValue, oldValue)
-        //   }
-        // ]
-
-        // age: [
-        //   'handler',
-        //   'handler1'
-        // ]
-
-        // age: 'handler'
-
-        age: [{
-          handler: 'handler',
-          sync: true
-        }]
-      },
-      methods: {
-        handler(newValue, oldValue) {
-          console.log(newValue, oldValue)
-        },
-        handler1(newValue, oldValue) {
-          console.log(newValue, oldValue)
+      computed: {
+        fullName() {
+          console.log('---------computed1111')
+          return this.firstName + this.lastName;
         }
-      },
+      }
     })
     setTimeout(() => {
-      vm.age = 19
-    }, 4000);
-    // vm.age = 20
+      vm.lastName = 'dd';
+    }, 2000);
     /* 
-    1.如果监控的key对应的值是对象，是无法获取老状态的
-    2.watch一个属性可以注册多个监听器
-    3.可以写成handler的形式，监听method中的方法
+    computed 和 watch 的区别：
+    1. watch 在内部会对变量取值，computed 默认是不会的
+    2. computed 依赖的值不变就不会重新执行
+    3. computed 变量可以用于模板的渲染
     */
   </script>
 </body>
+
 </html>

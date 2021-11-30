@@ -17,8 +17,8 @@ export default {
 			? serve({
 					open: true,
 					openPage: '/public/index.html',
-					port: 3000,
-					contentBase: '' // 根目录 
+					port: 4000,
+					contentBase: '' // 根目录
 				})
 			: null
 	]
